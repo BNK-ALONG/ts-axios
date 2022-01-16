@@ -57,4 +57,5 @@ router.post('/base/buffer', function(req, res) {
     res.json(buf.toJSON())
   })
 })
+
 app.use(router)

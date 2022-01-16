@@ -40,10 +40,11 @@ export function buildURL(url: string, params?: any): string {
    * 6. 参数值为对象。√
    * 7. 参数为数组。√
    */
-  let exitQueryMap = getUrlQuery(url)
+  // URLSearchParams 只能解析?问号后面的，如果问号前面还有路径是解析不出来的。
+  let searchParams = new URLSearchParams(url.replace(/.*?\?/, ''))
   Object.keys(params).forEach(key => {
     const val = params[key]
-    if (val === null || val === undefined || key in exitQueryMap) return
+    if (val === null || val === undefined || searchParams.has(key)) return
     let values = []
     if (Array.isArray(val)) {
       values = val
