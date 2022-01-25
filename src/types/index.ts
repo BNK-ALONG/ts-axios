@@ -24,6 +24,7 @@ export interface AxiosRequestConfig {
   params?: any
   headers?: any
   responseType?: XMLHttpRequestResponseType
+  timeout?: number
 }
 
 export interface AxiosResponse {
@@ -35,4 +36,14 @@ export interface AxiosResponse {
   request: any // XMLHttpRequest 对象实例request
 }
 
+// 这里的泛型是什么意思？泛型变量
 export interface AxiosPromise extends Promise<AxiosResponse> {}
+
+// 我们希望对外提供的错误信息不仅仅包含错误文本，还有config,request实例,response,错误码code
+export interface AxiosError extends Error {
+  code?: number | null
+  config: AxiosRequestConfig
+  request?: any
+  response?: AxiosResponse
+  isAxiosError: boolean
+}

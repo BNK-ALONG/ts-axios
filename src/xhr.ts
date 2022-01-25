@@ -1,11 +1,17 @@
+import { createError } from './helpers/error'
+import { parseHeaders } from './helpers/headers'
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types'
+
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
-  return new Promise(resolve => {
-    const { data = null, url, method = 'get', headers, responseType } = config
+  return new Promise((resolve, reject) => {
+    const { data = null, url, method = 'get', headers, responseType, timeout } = config
 
     const xhr = new XMLHttpRequest()
     if (responseType) {
       xhr.responseType = responseType
+    }
+    if (timeout) {
+      xhr.timeout = timeout
     }
     xhr.open(method.toUpperCase(), url, true)
     // TODO:
@@ -16,7 +22,18 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       if (xhr.readyState !== 4) {
         return
       }
-      const requestHeaders = xhr.getAllResponseHeaders()
+      /**
+       * status的值
+       *
+       * UNSENT（未发送） 0
+       * OPENED（已打开） 0
+       * LOADING（载入中） 200
+       * DONE（完成） 200
+       */
+      if (xhr.status === 0) {
+        return
+      }
+      const requestHeaders = parseHeaders(xhr.getAllResponseHeaders())
       const responseData = responseType === 'text' ? xhr.responseText : xhr.response
       const response: AxiosResponse = {
         data: responseData,
@@ -26,7 +43,22 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
         status: xhr.status,
         statusText: xhr.statusText
       }
-      resolve(response)
+      handleResponse(response)
+    }
+    function handleResponse(res: AxiosResponse): void {
+      if (res.status >= 200 && res.status < 300) {
+        resolve(res)
+      } else {
+        reject(createError(`Request failed with status code ${res.status}`, config, null, xhr, res))
+      }
+    }
+    // 请求默认的超时时间是0,即永不超时
+    xhr.ontimeout = function handleTimeout() {
+      reject(createError(`Timeout of ${timeout} ms exceeded`, config, null, xhr))
+    }
+    // 只有网络层出问题，才会触发这个回调
+    xhr.onerror = function handleError() {
+      reject(createError(`Network Error`, config, null, xhr))
     }
     Object.keys(headers).forEach(name => {
       if (data === null && name.toUpperCase() === 'CONTENT-TYPE') {

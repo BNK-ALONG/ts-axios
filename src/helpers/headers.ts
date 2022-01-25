@@ -29,3 +29,23 @@ function normalizeHeaderName(headers: any, normalizeName: string): void {
     }
   })
 }
+
+/**
+ * 解析请求头
+ * @param headers 请求头
+ * @returns 返回请求头key-value形式的对象
+ */
+export function parseHeaders(headers: string): any {
+  let parse = Object.create(null)
+  if (!headers) return parse
+  headers.split('\r\n').forEach(line => {
+    // line有可能是空字符串
+    let [key = '', value = ''] = line.split(':')
+    key = key.trim().toLowerCase()
+    value = value.trim()
+    if (!key) return
+    if (!value) return
+    parse[key] = value
+  })
+  return parse
+}
