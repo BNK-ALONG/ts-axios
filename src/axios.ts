@@ -1,32 +1,15 @@
-import { transformRequest, transformResponse } from './helpers/data'
-import { processHeaders } from './helpers/headers'
-import { buildURL } from './helpers/url'
-import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from './types'
-import xhr from './xhr'
-function axios(config: AxiosRequestConfig): AxiosPromise {
-  processConfig(config)
-  return xhr(config).then(response => {
-    return transformResponseData(response)
-  })
+import { AxiosInstance } from '.'
+import Axios from './core/Axios'
+import { extend } from './helpers/util'
+
+function createInstance(): AxiosInstance {
+  // 这是实例的属性，目的是可以这样使用axios.get(url,config)
+  const context = new Axios()
+  // 这是原型的属性，目的是可以直接new axios(config)，把axios当成一个函数
+  const instance = Axios.prototype.request.bind(context)
+  extend(instance, context)
+  return instance as AxiosInstance
 }
-function processConfig(config: AxiosRequestConfig): void {
-  config.url = transformUrl(config)
-  config.headers = transformRequestHeaders(config)
-  config.data = transformRequestData(config)
-}
-function transformUrl(config: AxiosRequestConfig): string {
-  let { url, params } = config
-  return buildURL(url, params)
-}
-function transformRequestData(config: AxiosRequestConfig): any {
-  return transformRequest(config.data)
-}
-function transformRequestHeaders(config: AxiosRequestConfig): any {
-  const { headers = {}, data } = config
-  return processHeaders(headers, data)
-}
-function transformResponseData(res: AxiosResponse): AxiosResponse {
-  res.data = transformResponse(res.data)
-  return res
-}
+
+const axios = createInstance()
 export default axios
