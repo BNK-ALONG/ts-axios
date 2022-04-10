@@ -27,8 +27,8 @@ export interface AxiosRequestConfig {
   timeout?: number
 }
 
-export interface AxiosResponse {
-  data: any // 服务端返回的数据
+export interface AxiosResponse<T = any> {
+  data: T // 服务端返回的数据
   status: number // HTTP状态码
   statusText: string // 状态消息
   headers: any // 响应头
@@ -37,7 +37,7 @@ export interface AxiosResponse {
 }
 
 // 这里的泛型是什么意思？泛型变量
-export interface AxiosPromise extends Promise<AxiosResponse> {}
+export interface AxiosPromise<T = any> extends Promise<AxiosResponse<T>> {}
 
 // 我们希望对外提供的错误信息不仅仅包含错误文本，还有config,request实例,response,错误码code
 export interface AxiosError extends Error {
@@ -50,23 +50,42 @@ export interface AxiosError extends Error {
 
 // 这是一个包含axios属性方法的类
 export interface Axios {
-  (config: AxiosRequestConfig): AxiosPromise
-  request: (config: AxiosRequestConfig) => AxiosPromise
+  interceptor: {
+    request: AxiosInterceptorsManager
+    response: AxiosInterceptorsManager
+  }
+  request: <T = any>(config: AxiosRequestConfig) => AxiosPromise<T>
 
-  get: (url: string, config?: AxiosRequestConfig) => AxiosPromise
+  get: <T = any>(url: string, config?: AxiosRequestConfig) => AxiosPromise<T>
 
-  delete: (url: string, config?: AxiosRequestConfig) => AxiosPromise
+  delete: <T = any>(url: string, config?: AxiosRequestConfig) => AxiosPromise<T>
 
-  head: (url: string, config?: AxiosRequestConfig) => AxiosPromise
+  head: <T = any>(url: string, config?: AxiosRequestConfig) => AxiosPromise<T>
 
-  options: (url: string, config?: AxiosRequestConfig) => AxiosPromise
+  options: <T = any>(url: string, config?: AxiosRequestConfig) => AxiosPromise<T>
 
-  post: (url: string, data?: any, config?: AxiosRequestConfig) => AxiosPromise
+  post: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => AxiosPromise<T>
 
-  put: (url: string, data?: any, config?: AxiosRequestConfig) => AxiosPromise
+  put: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => AxiosPromise<T>
 
-  patch: (url: string, data?: any, config?: AxiosRequestConfig) => AxiosPromise
+  patch: <T = any>(url: string, data?: any, config?: AxiosRequestConfig) => AxiosPromise<T>
 }
 export interface AxiosInstance extends Axios {
-  (config: AxiosRequestConfig): AxiosPromise
+  <T = any>(config: AxiosRequestConfig): AxiosPromise<T>
+  <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+}
+
+export interface AxiosInterceptorsManager {
+  use(resolved: ResolvedFn, rejected?: RejectedFn): number
+  // forEach 这个函数是内部使用的，不用暴露出去，所以不用写在这个接口里面
+  eject(id: number): void
+}
+
+// 因为resolve函数的参数是不一定的，请求拦截器的参数是AxiosRequestConfig，而响应拦截器的参数是AxiosResponse，所以这里要用泛型。
+export interface ResolvedFn<T = any> {
+  (val: T): T | Promise<T>
+}
+
+export interface RejectedFn {
+  (error: any): any
 }

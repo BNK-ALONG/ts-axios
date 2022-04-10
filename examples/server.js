@@ -37,6 +37,8 @@ registerBaseRouter()
 registerErrorRouter()
 registerSimpleRouter()
 registerExtendRouter()
+registerUserRouter()
+registerInterceptorRouter()
 function registerSimpleRouter() {
   router.get('/simple/get', function(req, res) {
     res.json({
@@ -108,6 +110,24 @@ function registerExtendRouter() {
   })
   router.patch('/extend/patch', (req, res) => {
     res.json(req.body)
+  })
+}
+
+function registerUserRouter() {
+  router.get('/user/info', function(req, res) {
+    res.json({
+      code: 0,
+      msg: 'success',
+      data: {
+        name: 'John',
+        age: 25
+      }
+    })
+  })
+}
+function registerInterceptorRouter() {
+  router.get('/interceptor/get', function(req, res) {
+    res.end('hello')
   })
 }
 
