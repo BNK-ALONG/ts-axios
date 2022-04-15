@@ -18,13 +18,16 @@ export type Method =
   | 'trace'
   | 'TRACE'
 export interface AxiosRequestConfig {
-  url: string
+  url?: string
   method?: Method
   data?: any
   params?: any
   headers?: any
   responseType?: XMLHttpRequestResponseType
   timeout?: number
+  transformRequest?: AxiosTransformer | AxiosTransformer[]
+  transformResponse?: AxiosTransformer | AxiosTransformer[]
+  [propName: string]: any // 字符串索引签名
 }
 
 export interface AxiosResponse<T = any> {
@@ -50,6 +53,7 @@ export interface AxiosError extends Error {
 
 // 这是一个包含axios属性方法的类
 export interface Axios {
+  defaults: AxiosRequestConfig
   interceptor: {
     request: AxiosInterceptorsManager
     response: AxiosInterceptorsManager
@@ -75,6 +79,10 @@ export interface AxiosInstance extends Axios {
   <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
 }
 
+export interface AxiosStatic extends AxiosInstance {
+  create(config?: AxiosRequestConfig): AxiosInstance
+}
+
 export interface AxiosInterceptorsManager {
   use(resolved: ResolvedFn, rejected?: RejectedFn): number
   // forEach 这个函数是内部使用的，不用暴露出去，所以不用写在这个接口里面
@@ -88,4 +96,8 @@ export interface ResolvedFn<T = any> {
 
 export interface RejectedFn {
   (error: any): any
+}
+
+export interface AxiosTransformer {
+  (data: any, headers: any): any
 }

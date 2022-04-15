@@ -2,6 +2,7 @@ import { AxiosPromise, AxiosRequestConfig, Method } from '..'
 import { AxiosResponse, RejectedFn, ResolvedFn } from '../types'
 import dispatchRequest from './dispatchRequest'
 import InterceptorManager from './Interceptor'
+import mergeConfig from './mergeConfig'
 
 interface Interceptor {
   request: InterceptorManager<AxiosRequestConfig>
@@ -14,12 +15,14 @@ interface PromiseChain<T> {
 }
 
 export default class Axios {
+  defaults: AxiosRequestConfig
   interceptor: Interceptor
-  constructor() {
+  constructor(initConfig: AxiosRequestConfig) {
     this.interceptor = {
       request: new InterceptorManager<AxiosRequestConfig>(),
       response: new InterceptorManager<AxiosResponse>()
     }
+    this.defaults = initConfig
   }
   // 因为第一个参数有可能是一个URL，也有可能是一个对象
   // 这里用的是函数重载思想：通过传入不同参数（参数顺序、参数个数、参数类型）实现不同功能
@@ -30,6 +33,7 @@ export default class Axios {
     } else {
       config = url
     }
+    config = mergeConfig(this.defaults, config)
     const chain: PromiseChain<any>[] = [
       {
         resolved: dispatchRequest,

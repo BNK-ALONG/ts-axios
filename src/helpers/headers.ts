@@ -1,4 +1,5 @@
-import { isPlainObject } from './util'
+import { Method } from '../types'
+import { deepMerge, isPlainObject } from './util'
 
 /**
  * 处理请求头
@@ -48,4 +49,18 @@ export function parseHeaders(headers: string): any {
     parse[key] = value
   })
   return parse
+}
+
+export function flattenHeaders(headers: any, method: Method): any {
+  if (!headers) {
+    return headers
+  }
+  headers = deepMerge(headers.common, headers[method], headers)
+  const methodToDelete = ['get', 'head', 'delete', 'options', 'post', 'put', 'patch', 'common']
+  methodToDelete.forEach(method => {
+    if (headers[method]) {
+      delete headers[method]
+    }
+  })
+  return headers
 }

@@ -39,6 +39,7 @@ registerSimpleRouter()
 registerExtendRouter()
 registerUserRouter()
 registerInterceptorRouter()
+registerDefaultsRouter()
 function registerSimpleRouter() {
   router.get('/simple/get', function(req, res) {
     res.json({
@@ -130,5 +131,9 @@ function registerInterceptorRouter() {
     res.end('hello')
   })
 }
-
+function registerDefaultsRouter() {
+  router.post('/defaults/post', function(req, res) {
+    res.json(req.body)
+  })
+}
 app.use(router)
