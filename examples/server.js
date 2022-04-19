@@ -40,6 +40,7 @@ registerExtendRouter()
 registerUserRouter()
 registerInterceptorRouter()
 registerDefaultsRouter()
+registerCancelRouter()
 function registerSimpleRouter() {
   router.get('/simple/get', function(req, res) {
     res.json({
@@ -134,6 +135,19 @@ function registerInterceptorRouter() {
 function registerDefaultsRouter() {
   router.post('/defaults/post', function(req, res) {
     res.json(req.body)
+  })
+}
+function registerCancelRouter() {
+  router.get('/cancel/get', function(req, res) {
+    setTimeout(() => {
+      res.json('hello')
+    }, 1000)
+  })
+
+  router.post('/cancel/post', function(req, res) {
+    setTimeout(() => {
+      res.json(req.body)
+    })
   })
 }
 app.use(router)
