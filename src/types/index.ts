@@ -27,7 +27,8 @@ export interface AxiosRequestConfig {
   timeout?: number
   transformRequest?: AxiosTransformer | AxiosTransformer[]
   transformResponse?: AxiosTransformer | AxiosTransformer[]
-  cancelToken: CancelToken
+  cancelToken?: CancelToken
+  withCredentials?: boolean
   [propName: string]: any // 字符串索引签名
 }
 

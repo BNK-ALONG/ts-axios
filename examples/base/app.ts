@@ -1,8 +1,9 @@
 import axios from '../../src/index'
 
+// localhost和127.0.0.1确实会跨域
 axios({
     method: 'get',
-    url: '/base/get',
+    url: 'http://127.0.0.1:8080/base/get',
     params: {
         foo: ['bar', 'baz']
     }
