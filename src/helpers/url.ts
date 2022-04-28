@@ -1,4 +1,8 @@
 import { isDate, isPlainObject } from './util'
+interface URLOrigin {
+  protocol: string
+  host: string
+}
 function getUrlQuery(url: string): string[] {
   // 获取?后面的字符串
   let query = decodeURIComponent(url)
@@ -67,4 +71,21 @@ export function buildURL(url: string, params?: any): string {
   if (markIndex > -1) url = url.slice(0, markIndex)
   url = url + (url.indexOf('?') === -1 ? '?' : '&') + serializedParams
   return url
+}
+const urlParsingNode = document.createElement('a')
+const currentOrigin = resolveURL(window.location.href)
+export function isURLSameOrigin(requestURL: string): boolean {
+  const targetOrigin = resolveURL(requestURL)
+  return (
+    targetOrigin.protocol === currentOrigin.protocol && targetOrigin.host === currentOrigin.host
+  )
+}
+
+function resolveURL(url: string): URLOrigin {
+  urlParsingNode.setAttribute('href', url)
+  const { protocol, host } = urlParsingNode
+  return {
+    protocol,
+    host
+  }
 }

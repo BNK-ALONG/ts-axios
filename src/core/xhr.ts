@@ -1,6 +1,8 @@
 import { createError } from '../helpers/error'
 import { parseHeaders } from '../helpers/headers'
 import { AxiosRequestConfig, AxiosPromise, AxiosResponse } from '..'
+import { isURLSameOrigin } from '../helpers/url'
+import cookie from '../helpers/cookie'
 
 export default function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
@@ -11,7 +13,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       headers,
       responseType,
       timeout,
-      withCredentials
+      withCredentials,
+      xsrfCookieName,
+      xsrfHeaderName
     } = config
 
     const xhr = new XMLHttpRequest()
@@ -70,6 +74,12 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
     // 只有网络层出问题，才会触发这个回调
     xhr.onerror = function handleError() {
       reject(createError(`Network Error`, config, null, xhr))
+    }
+    if ((withCredentials || isURLSameOrigin(url)) && xsrfCookieName) {
+      const token = cookie.read(xsrfCookieName)
+      if (token) {
+        headers[xsrfHeaderName] = token
+      }
     }
     Object.keys(headers).forEach(name => {
       if (data === null && name.toUpperCase() === 'CONTENT-TYPE') {

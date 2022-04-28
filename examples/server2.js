@@ -14,7 +14,7 @@ const cors = {
   'Access-Control-Allow-Origin': 'http://localhost:8080',
   'Access-Control-Allow-Headers': 'accpet,content-type',
   'Access-Control-Allow-Credentials': true,
-  'Access-Control-Allow-Methods': 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  'Access-Control-Allow-Methods': '*',
   'X-My-Custom-Header': 'X-My-Custom-Header',
   'Access-Control-Expose-Headers': 'X-My-Custom-Header', // 允许客户端获取的响应头部，如果不设置那么通过xhr.getAllResponseHeaders是获取不到的
   'Access-Control-Max-Age': 3 * 60 // 设置preflight 请求（options请求） 缓存的有效时间，单位：秒
