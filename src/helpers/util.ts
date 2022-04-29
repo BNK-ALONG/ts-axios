@@ -9,6 +9,10 @@ export function isUndef(val: any): boolean {
 export function isPlainObject(val: any): val is Object {
   return _toString.call(val) === '[object Object]'
 }
+
+export function isFormData(val: any): val is FormData {
+  return typeof val !== 'undefined' && val instanceof FormData
+}
 // 泛型：和any类似，可以是任何类型，但是泛型不会丢失信息
 // 泛型变量：就是用<> 括号起来的
 // 泛型约束：我们可以用extends 关键词去约束传入的对象必须包含某个属性

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Extend example</title>
+    <link
+      href="https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/4.6.1/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <h1>file download</h1>
+    <div>
+      <button id="download" class="btn btn-primary">Download</button>
+    </div>
+    <h1>Upload file</h1>
+    <form action="/progress/upload" role="form" onsubmit="return false;">
+      <input type="file" id="file" class="form-control" />
+      <button type="button" id="upload" class="btn btn-primary">Upload</button>
+    </form>
+    <h1>收获：</h1>
+    <ul>
+      <li>1. style-loader、css-loader的作用</li>
+      <li>2. style-loader、css-loader、sass-loader的执行顺序</li>
+      <li>3. xhr.onprogress和xhr.upload.onprogress事件监听器</li>
+    </ul>
+    <script src="/__build__/progress.js"></script>
+  </body>
+</html>

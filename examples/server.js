@@ -1,10 +1,12 @@
 const express = require('express')
 const bodyParser = require('body-parser')
 const webpack = require('webpack')
+const multiparty = require('connect-multiparty')
 const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const WebpackConfig = require('./webpack.config')
 const cookieParser = require('cookie-parser')
+const path = require('path')
 require('./server2')
 const app = express()
 const compiler = webpack(WebpackConfig)
@@ -28,7 +30,12 @@ app.use(
     }
   })
 )
-
+// 接受上传文件的目录
+app.use(
+  multiparty({
+    uploadDir: path.resolve(__dirname, 'upload-files')
+  })
+)
 app.use(bodyParser.json())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(cookieParser())
@@ -49,6 +56,7 @@ registerInterceptorRouter()
 registerDefaultsRouter()
 registerCancelRouter()
 registerMoreRouter()
+registerProgressRouter()
 function registerSimpleRouter() {
   router.get('/simple/get', function(req, res) {
     res.json({
@@ -161,6 +169,12 @@ function registerCancelRouter() {
 function registerMoreRouter() {
   router.get('/more/get', function(req, res) {
     res.json(req.cookies)
+  })
+}
+function registerProgressRouter() {
+  router.post('/progress/upload', function(req, res) {
+    console.log(req.body, req.files)
+    res.end('upload success!')
   })
 }
 app.use(router)
