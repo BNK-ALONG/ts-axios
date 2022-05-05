@@ -18,7 +18,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       xsrfCookieName,
       xsrfHeaderName,
       onDownloadProgress,
-      onUploadProgress
+      onUploadProgress,
+      auth,
+      validateStatus
     } = config
     // 1. 第一步，先声明一个xhr对象
     const xhr = new XMLHttpRequest()
@@ -105,6 +107,9 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
           headers[xsrfHeaderName] = token
         }
       }
+      if (auth) {
+        headers['Authorization'] = 'Basic ' + btoa(auth.username + ':' + auth.password)
+      }
       Object.keys(headers).forEach(name => {
         if (data === null && name.toUpperCase() === 'CONTENT-TYPE') {
           return
@@ -122,7 +127,7 @@ export default function xhr(config: AxiosRequestConfig): AxiosPromise {
       }
     }
     function handleResponse(res: AxiosResponse): void {
-      if (res.status >= 200 && res.status < 300) {
+      if (!validateStatus || validateStatus(res.status)) {
         resolve(res)
       } else {
         reject(createError(`Request failed with status code ${res.status}`, config, null, xhr, res))

@@ -57,6 +57,8 @@ registerDefaultsRouter()
 registerCancelRouter()
 registerMoreRouter()
 registerProgressRouter()
+registerAuthRouter()
+registerValidateRouter()
 function registerSimpleRouter() {
   router.get('/simple/get', function(req, res) {
     res.json({
@@ -175,6 +177,25 @@ function registerProgressRouter() {
   router.post('/progress/upload', function(req, res) {
     console.log(req.body, req.files)
     res.end('upload success!')
+  })
+}
+function registerAuthRouter() {
+  router.post('/auth/post', function(req, res) {
+    const auth = req.headers.authorization
+    const [type, user] = auth.split(' ')
+    const [username, password] = atob(user).split(':')
+    if (type === 'Basic' && username === 'John' && password === '123') {
+      res.json(req.body)
+    } else {
+      res.status(401)
+      res.end('UnAuthorization')
+    }
+  })
+}
+function registerValidateRouter() {
+  router.get('/validate/get', function(req, res) {
+    res.status(304)
+    res.end()
   })
 }
 app.use(router)
